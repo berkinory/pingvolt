@@ -1,0 +1,21 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "uptime-aggregator",
+    "main": "src/aggregator.ts",
+    "compatibility_date": "2025-04-22",
+    "compatibility_flags": ["nodejs_compat"],
+    "observability": {
+        "enabled": true
+    },
+    "triggers": {
+        "crons": ["* * * * *"]
+    },
+    "send_metrics": false,
+    "vars": {},
+    "kv_namespaces": [
+        {
+            "binding": "UPTIME_RESULTS",
+            "id": "a5e3e8e85fe54e09972fbf41e7df14ca"
+        }
+    ]
+}

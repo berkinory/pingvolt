@@ -1,0 +1,84 @@
+{
+    "Navigation": {
+        "Search": "Search for anything...",
+        "Type-to-search-across-the-pages": "Type to search across the pages",
+        "To-toggle-search": "to toggle search",
+        "Esc-to-close": "to close",
+        "No-results-found-for": "No results found for",
+        "Platform": "Platform",
+        "Home": "Home",
+        "Monitors": "Monitors",
+        "Status": "Status Pages",
+        "Billing": "Billing",
+        "Referrals": "Referrals",
+        "Support": "Support",
+        "Log-out": "Log Out",
+        "Need-help": "Need assistance about something? Our support team is ready to assist you."
+    },
+    "Landing": {
+        "Title": "Home",
+        "Subtitle": "Welcome to the home page",
+        "Get-started": "Get Started"
+    },
+    "Auth": {
+        "Sign-in": "Sign In",
+        "Sign-out": "Sign Out",
+        "Welcome": "Welcome to pingvolt",
+        "Description": "To continue, please sign in",
+        "Continue-with-google": "Continue with Google",
+        "Auth-error": "Auth error"
+    },
+    "Monitors": {
+        "active-monitors": "Your Monitors",
+        "no-monitors": "You haven't added any monitors yet.",
+        "error-loading": "Error loading monitor data.",
+        "every-x-minutes": "every {minutes} {minutes, plural, one {min} other {mins}}",
+        "just-now": "just now",
+        "refresh": "Refresh",
+        "monitors-refreshed": "Monitors refreshed successfully",
+        "refresh-error": "Failed to refresh monitors"
+    },
+    "MonitorDetail": {
+        "just-now": "just now",
+        "website-status": "Status",
+        "status-up": "Up",
+        "status-down": "Down",
+        "status-waiting": "Waiting",
+        "last-check": "Last Check",
+        "refreshed": "Monitor data refreshed",
+        "refresh-error": "Failed to refresh monitor data"
+    },
+    "Payment": {
+        "Successful": {
+            "Title": "Subscription Activated!",
+            "Description": "Thank you for subscribing to Pingvolt Premium. Your account has been successfully upgraded.",
+            "BenefitTitle": "Your Premium Benefits",
+            "Benefit1": "50 Monitors",
+            "Benefit2": "Email Alerts",
+            "Benefit3": "10 Status Pages",
+            "Benefit4": "A BIIIIIG THANK YOU",
+            "GetStarted": "Get Started",
+            "Need-help": "Need assistance about something? Our support team is ready to assist you."
+        }
+    },
+    "Billing": {
+        "Title": "Subscription Management",
+        "Status": "Subscription Status",
+        "Active": "Active",
+        "Inactive": "Inactive",
+        "ExpiresOn": "Expires on",
+        "UpgradeNow": "Upgrade Now",
+        "ManageSubscription": "Management Panel",
+        "FreeTitle": "Free Plan",
+        "PremiumTitle": "Premium Plan",
+        "Free1": "5 Monitors",
+        "Free2": "5-minute check intervals",
+        "Free3": "Basic email alerts",
+        "Free4": "1 Status page",
+        "Premium1": "50 Monitors",
+        "Premium2": "1-minute check intervals",
+        "Premium3": "Advanced notifications",
+        "Premium4": "10 Status pages",
+        "Error": "Error loading subscription data"
+    }
+}
