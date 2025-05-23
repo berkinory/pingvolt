@@ -3,14 +3,14 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { db } from '@/db/drizzle';
 import * as schema from '@/db/auth-schema';
-import { polar } from '@polar-sh/better-auth';
+import { polar, portal, checkout, webhooks } from '@polar-sh/better-auth';
 import { Polar } from '@polar-sh/sdk';
 
 let polarClient: Polar | null = null;
 if (process.env.OSS_ENABLED !== '1') {
     polarClient = new Polar({
         accessToken: process.env.POLAR_ACCESS_TOKEN,
-        server: 'production',
+        server: 'sandbox',
     });
 }
 
@@ -45,7 +45,16 @@ export const auth = betterAuth({
                   polar({
                       client: polarClient,
                       createCustomerOnSignUp: true,
-                      enableCustomerPortal: true,
+                      use: [
+                        portal(),
+                        checkout({
+                            authenticatedUsersOnly: true,
+                            successUrl: '/dashboard/success',
+                        }),
+                        webhooks({
+                            secret: process.env.POLAR_WEBHOOK_SECRET!,
+                        }),
+                      ]
                   }),
               ]
             : []),
