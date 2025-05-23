@@ -3,11 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "deploy": "wrangler deploy",
-        "dev": "wrangler dev",
-        "start": "wrangler dev",
-        "lint": "bunx biome lint",
-        "format": "bunx biome format --write",
+        "deploy": "wrangler deploy && wrangler deploy --config wrangler.aggregator.jsonc",
+        "lint": "biome lint",
+        "format": "biome format --write",
         "cf-typegen": "wrangler types"
     },
     "devDependencies": {
