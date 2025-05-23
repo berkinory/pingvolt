@@ -82,7 +82,7 @@ async function scheduledFunction(
             .where(
                 and(
                     sql`${websites.isActive} = true`,
-                    sql`${websites.updatedAt} <= NOW() - (interval '1 minute' * ${websites.interval}) + interval '30 seconds'`
+                    sql`${websites.updatedAt} <= NOW() - (interval '1 minute' * ${websites.interval}) + interval '40 seconds'`
                 )
             )
             .orderBy(websites.updatedAt);
@@ -178,7 +178,7 @@ async function runCheckWithRetry(url: string): Promise<number> {
     }
 
     if (status !== 200 && shouldRetry(status)) {
-        await new Promise((res) => setTimeout(res, 20000));
+        await new Promise((res) => setTimeout(res, 5000));
 
         try {
             status = await performCheck(url);
@@ -220,7 +220,7 @@ async function queue(
     const startTime = Date.now();
     const workerTimeout = setTimeout(() => {
         console.error(STRINGS.ERROR_TIMEOUT);
-    }, 55000);
+    }, 40000);
 
     for (const message of batch.messages) {
         try {
