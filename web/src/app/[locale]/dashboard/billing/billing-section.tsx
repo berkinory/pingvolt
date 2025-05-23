@@ -16,6 +16,11 @@ import { CheckCircle } from 'lucide-react';
 import { authClient } from '@/lib/client';
 import { useSubscription } from '@/lib/query/api-queries';
 
+/**
+ * Displays the user's billing and subscription status, allowing upgrades and access to the customer portal.
+ *
+ * Renders the current subscription state, including plan status, expiration date, and available features for both Free and Premium plans. Provides buttons to upgrade the subscription or manage it via the customer portal. Handles loading and error states during subscription data fetching.
+ */
 export function BillingSection() {
     const t = useTranslations('Billing');
     const locale = useLocale();
