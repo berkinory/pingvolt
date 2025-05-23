@@ -22,58 +22,6 @@ if (!isOss()) {
     });
 }
 
-polarRoutes.get(
-    '/checkout',
-    withRateLimit(
-        withAuth(async (c, _user) => {
-            if (isOss()) {
-                return createResponse(false, 'Payments are disabled in OSS');
-            }
-
-            const handler = Checkout({
-                accessToken: process.env.POLAR_ACCESS_TOKEN!,
-                successUrl: 'https://pingvolt.com/dashboard/success',
-                server: server,
-            });
-
-            return handler(c);
-        })
-    )
-);
-
-polarRoutes.get(
-    '/portal',
-    withRateLimit(
-        withAuth(async (c, user) => {
-            if (isOss()) {
-                return createResponse(false, 'Payments are disabled in OSS');
-            }
-
-            const handler = CustomerPortal({
-                accessToken: process.env.POLAR_ACCESS_TOKEN!,
-                server: server,
-                getCustomerId: async () => {
-                    try {
-                        if (!polar)
-                            throw new Error('Polar client not initialized');
-                        const customer = await polar.customers.getExternal({
-                            externalId: user.id,
-                        });
-
-                        return customer.id;
-                    } catch (error) {
-                        throw new Error(
-                            `Customer not found: ${error as string}`
-                        );
-                    }
-                },
-            });
-
-            return handler(c);
-        })
-    )
-);
-
 polarRoutes.post(
     '/webhook/polar',
     Webhooks({

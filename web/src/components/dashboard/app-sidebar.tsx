@@ -97,12 +97,12 @@ export const createSidebarData = (t: ReturnType<typeof useTranslations>) => ({
             type: 'modal' as const,
             modalContent: {
                 description: t('Need-help'),
-                email: 'support@uptime.pingvolt.com',
+                email: 'support@pingvolt.com',
             },
         },
         {
             title: 'Github',
-            url: 'https://github.com/devmirac/pingvolt',
+            url: 'https://github.com/berkinory/pingvolt',
             icon: FiGithub,
             keywords: [
                 'github',

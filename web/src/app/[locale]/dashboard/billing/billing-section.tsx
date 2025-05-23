@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useSubscription } from '@/lib/query/api-queries';
 import {
     Card,
     CardContent,
@@ -14,11 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { useLocale } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle } from 'lucide-react';
-
-const PREMIUM_PRODUCT_IDS = [
-    '19f41cca-3ac4-4d33-913c-e3adc065814e',
-    'ff1d5a38-d0e9-4716-9572-55dc4d8f6992',
-];
+import { authClient } from '@/lib/client';
+import { useSubscription } from '@/lib/query/api-queries';
 
 export function BillingSection() {
     const t = useTranslations('Billing');
@@ -45,21 +41,23 @@ export function BillingSection() {
 
     const isActive = data?.active || false;
     const expiresAt = data?.expiresAt ? new Date(data.expiresAt) : null;
-    const userId = data?.userId;
 
-    const generateCheckoutUrl = () => {
-        const baseUrl = '/api/checkout';
-        const params = new URLSearchParams();
-
-        for (const productId of PREMIUM_PRODUCT_IDS) {
-            params.append('products', productId);
+    const handleCheckout = async () => {
+        try {
+            await authClient.checkout({
+                products: ['c6cf1605-07b5-4659-97eb-0490e8802a80', '4aa492c7-65db-4a8a-b36f-bca29a74b5ef'],
+            });
+        } catch (error) {
+            console.error('Checkout failed:', error);
         }
+    };
 
-        if (userId) {
-            params.append('customerExternalId', userId);
+    const handlePortal = async () => {
+        try {
+            await authClient.customer.portal();
+        } catch (error) {
+            console.error('Portal access failed:', error);
         }
-
-        return `${baseUrl}?${params.toString()}`;
     };
 
     return (
@@ -96,22 +94,13 @@ export function BillingSection() {
                             </div>
                             <div className="flex gap-3">
                                 {!isActive && (
-                                    <Button
-                                        onMouseDown={() => {
-                                            window.open(
-                                                generateCheckoutUrl(),
-                                                '_blank'
-                                            );
-                                        }}
-                                    >
+                                    <Button onMouseDown={handleCheckout}>
                                         {t('UpgradeNow')}
                                     </Button>
                                 )}
                                 <Button
                                     variant="outline"
-                                    onMouseDown={() =>
-                                        window.open('/api/portal', '_blank')
-                                    }
+                                    onMouseDown={handlePortal}
                                 >
                                     {t('ManageSubscription')}
                                 </Button>
