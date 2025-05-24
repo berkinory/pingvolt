@@ -68,6 +68,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
+        "@sindresorhus/tsconfig": "^7.0.0",
         "@types/node": "^20.17.30",
         "@types/pg": "^8.11.14",
         "@types/react": "^18",
