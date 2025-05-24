@@ -27,11 +27,9 @@ interface UptimeCheckMessage {
 const STRINGS = {
     CHECK_PREFIX: 'checks:',
     USER_AGENTS: [
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.10 Safari/605.1.1 Pingvolt Uptime',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.3 Pingvolt Uptime',
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3 Pingvolt Uptime',
     ],
-    ERROR_TIMEOUT: 'Worker timeout reached (30s) - forcing completion',
+    ERROR_TIMEOUT: 'Worker timeout reached - forcing completion',
     ERROR_KV_STORE: 'Error storing results in KV:',
     ERROR_BATCH: 'Error processing batch:',
     ERROR_WORKER: 'Error in Dispatcher Worker:',
@@ -70,10 +68,11 @@ function shouldRetry(status: number): boolean {
 async function scheduledFunction(
     _controller: ScheduledController,
     env: Env,
-    _ctx: ExecutionContext
+    ctx: ExecutionContext
 ): Promise<void> {
     const dbConnection = createDbConnection(env.DATABASE_URL);
     const db = dbConnection.db;
+    const startTime = Date.now();
 
     try {
         const eligibleWebsites = await db
@@ -95,11 +94,16 @@ async function scheduledFunction(
         }));
 
         if (websitesToCheck.length === 0) {
-            console.log('No websites to check');
+            ctx.waitUntil(
+                Promise.all([
+                    dbConnection.close(),
+                    Promise.resolve(console.log('No websites to check'))
+                ])
+            );
             return;
         }
 
-        const batches = chunk(websitesToCheck, 4);
+        const batches = chunk(websitesToCheck, 5);
         const timestamp = new Date().toISOString();
 
         const queuePromises = batches.map(async (batch, index) => {
@@ -117,11 +121,23 @@ async function scheduledFunction(
             }
         });
 
-        await Promise.all(queuePromises);
+        const results = await Promise.all(queuePromises);
+        
+        ctx.waitUntil(
+            Promise.all([
+                dbConnection.close(),
+                Promise.resolve().then(() => {
+                    const executionTime = Date.now() - startTime;
+                    const successCount = results.filter(Boolean).length;
+                    console.log(`Scheduler completed: ${successCount}/${results.length} batches sent in ${executionTime}ms`);
+                }),
+            ])
+        );
+
     } catch (error) {
         console.error(STRINGS.ERROR_WORKER, error);
-    } finally {
-        await dbConnection.close();
+        
+        ctx.waitUntil(dbConnection.close());
     }
 }
 
@@ -215,12 +231,14 @@ function parseErrorCode(error: unknown): number {
 async function queue(
     batch: MessageBatch<unknown>,
     env: Env,
-    _ctx: ExecutionContext
+    ctx: ExecutionContext
 ): Promise<void> {
     const startTime = Date.now();
     const workerTimeout = setTimeout(() => {
         console.error(STRINGS.ERROR_TIMEOUT);
     }, 40000);
+
+    const processedMessages: { success: number; failed: number } = { success: 0, failed: 0 };
 
     for (const message of batch.messages) {
         try {
@@ -252,15 +270,23 @@ async function queue(
             }
 
             message.ack();
+            processedMessages.success++;
         } catch (err) {
             console.error(STRINGS.ERROR_BATCH, err);
             message.retry();
+            processedMessages.failed++;
         }
     }
 
     clearTimeout(workerTimeout);
-    console.log(
-        `Finished processing ${batch.messages.length} messages in ${Date.now() - startTime}ms`
+    
+    ctx.waitUntil(
+        Promise.resolve().then(() => {
+            const executionTime = Date.now() - startTime;
+            console.log(
+                `Queue worker completed: ${processedMessages.success} successful, ${processedMessages.failed} failed, ${batch.messages.length} total in ${executionTime}ms`
+            );
+        })
     );
 }
 
